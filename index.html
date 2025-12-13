@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>PixelGalaxy | Galactic Image Compressor</title>
+    <meta
+      name="description"
+      content="Professional, privacy-first image compressor. Reduce file size by 90% in the browser. No uploads, no servers."
+    />
+    <!-- Galactic Favicon (Generated SVG) -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%233b82f6;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23grad)' /%3E%3C/svg%3E"
+    />
+    <!-- APP & SEO LINKS -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon.svg" />
+    <meta name="theme-color" content="#020617" />
+    <meta
+      property="og:image"
+      content="https://pixelgalaxy.netlify.app/icon.svg"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://pixelgalaxy.netlify.app/" />
+    <!-- Apple Touch Icon (For iPhone Homescreen) -->
+
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%233b82f6;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23grad)' /%3E%3C/svg%3E"
+    />
+    <meta
+      name="keywords"
+      content="image compressor, webp converter, png optimizer, free tool, galactic tools, image optimizer, client-side compression, privacy-first, fast image compression"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Compression Engine -->
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"
+    ></script>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- GALACTIC THEME SYSTEM --- */
+      :root {
+        --bg-deep: #020617;
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-surface: rgba(255, 255, 255, 0.03);
+        --neon-blue: #3b82f6;
+        --neon-purple: #8b5cf6;
+      }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        background-color: var(--bg-deep);
+        color: white;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+      }
+      /* Toast Notification Style */
+      .toast-box {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        backdrop-filter: blur(10px);
+        padding: 12px 24px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        z-index: 100;
+        opacity: 0;
+      }
+      .toast-box.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+      /* --- BACKGROUND EFFECTS --- */
+      /* The Stars */
+      .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background-image: radial-gradient(
+            white,
+            rgba(255, 255, 255, 0.2) 2px,
+            transparent 3px
+          ),
+          radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent 2px),
+          radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent 3px);
+        background-size: 550px 550px, 350px 350px, 250px 250px;
+        background-position: 0 0, 40px 60px, 130px 270px;
+        z-index: -2;
+      }
+
+      /* Glowing Orbs */
+      .orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.4;
+        z-index: -1;
+        animation: floatOrb 10s infinite ease-in-out;
+      }
+      .orb-1 {
+        width: 300px;
+        height: 300px;
+        background: var(--neon-blue);
+        top: -100px;
+        left: -100px;
+      }
+      .orb-2 {
+        width: 400px;
+        height: 400px;
+        background: var(--neon-purple);
+        bottom: -100px;
+        right: -100px;
+        animation-delay: 2s;
+      }
+
+      @keyframes floatOrb {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        50% {
+          transform: translate(30px, 50px);
+        }
+      }
+
+      /* --- GLASSMORPHISM --- */
+      .glass-panel {
+        background: var(--glass-surface);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
+      }
+
+      .glass-card:hover {
+        border-color: rgba(139, 92, 246, 0.3);
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        transform: translateY(-2px);
+      }
+
+      /* --- UI ELEMENTS --- */
+      .nav-link {
+        position: relative;
+        opacity: 0.7;
+        transition: 0.3s;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      }
+      .nav-link.active::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--neon-blue),
+          var(--neon-purple)
+        );
+        box-shadow: 0 0 10px var(--neon-blue);
+      }
+
+      .dropzone {
+        border: 2px dashed rgba(255, 255, 255, 0.1);
+        transition: 0.3s;
+        background: rgba(0, 0, 0, 0.2);
+      }
+      .dropzone:hover,
+      .dropzone.dragover {
+        border-color: var(--neon-blue);
+        background: rgba(59, 130, 246, 0.1);
+        box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.2);
+      }
+
+      .btn-galactic {
+        background: linear-gradient(
+          135deg,
+          var(--neon-blue),
+          var(--neon-purple)
+        );
+        color: white;
+        font-weight: 700;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+      }
+      .btn-galactic::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          var(--neon-purple),
+          var(--neon-blue)
+        );
+        z-index: -1;
+        transition: opacity 0.3s;
+        opacity: 0;
+      }
+      .btn-galactic:hover::before {
+        opacity: 1;
+      }
+      .btn-galactic:hover {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        transform: scale(1.02);
+      }
+
+      /* Single Page Logic */
+      .section {
+        display: none;
+        animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .section.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- GALACTIC LOADING SCREEN -->
+    <div
+      id="galaxyLoader"
+      class="fixed inset-0 z-[100] bg-[#020617] flex flex-col items-center justify-center transition-opacity duration-700 opacity-0 pointer-events-none"
+    >
+      <div class="relative w-32 h-32 flex items-center justify-center">
+        <!-- Orbiting Ring -->
+        <div
+          class="absolute inset-0 border-4 border-t-blue-500 border-r-purple-500 border-b-transparent border-l-transparent rounded-full animate-spin"
+        ></div>
+        <!-- Glowing Core -->
+        <div
+          class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full animate-pulse shadow-[0_0_50px_rgba(59,130,246,0.5)]"
+        ></div>
+      </div>
+      <p
+        id="loaderText"
+        class="mt-8 text-blue-400 font-bold tracking-[0.3em] text-xs animate-pulse"
+      >
+        ESTABLISHING UPLINK...
+      </p>
+    </div>
+    <!-- Background Elements -->
+    <div class="stars"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- NAVBAR -->
+    <nav
+      class="fixed top-0 w-full z-50 glass-panel border-b-0 border-b-white/5 h-20"
+    >
+      <div
+        class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between"
+      >
+        <!-- Logo -->
+        <div
+          class="flex items-center gap-3 cursor-pointer"
+          onclick="navTo('home')"
+        >
+          <div
+            class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse"
+          >
+            <i class="fa-solid fa-planet-ringed text-white"></i>
+          </div>
+          <span class="text-xl font-bold tracking-wider"
+            >PIXEL<span class="text-blue-400">GALAXY</span></span
+          >
+        </div>
+
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex gap-8 text-sm font-medium tracking-wide">
+          <button onclick="navTo('home')" class="nav-link active" id="nav-home">
+            COMPRESSOR
+          </button>
+          <button onclick="navTo('tools')" class="nav-link" id="nav-tools">
+            TOOLS
+          </button>
+          <button onclick="navTo('about')" class="nav-link" id="nav-about">
+            ABOUT
+          </button>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="md:hidden text-white text-xl" onclick="toggleMobile()">
+          <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MOBILE MENU OVERLAY -->
+    <div
+      id="mobileMenu"
+      class="fixed inset-0 bg-black/95 z-40 hidden flex flex-col items-center justify-center gap-8 text-2xl font-bold transition-opacity"
+    >
+      <button
+        onclick="toggleMobile()"
+        class="absolute top-6 right-6 text-gray-500 hover:text-white"
+      >
+        <i class="fa-solid fa-xmark text-3xl"></i>
+      </button>
+      <button
+        onclick="navTo('home'); toggleMobile()"
+        class="hover:text-blue-400"
+      >
+        Home
+      </button>
+      <button
+        onclick="navTo('tools'); toggleMobile()"
+        class="hover:text-blue-400"
+      >
+        Tools
+      </button>
+      <button
+        onclick="navTo('about'); toggleMobile()"
+        class="hover:text-blue-400"
+      >
+        About
+      </button>
+      <button
+        onclick="navTo('privacy'); toggleMobile()"
+        class="hover:text-blue-400"
+      >
+        Privacy
+      </button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="pt-32 pb-12 px-4 max-w-5xl mx-auto min-h-screen">
+      <!-- === HOME SECTION === -->
+      <div id="home" class="section active">
+        <div class="text-center mb-12">
+          <div
+            class="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold tracking-widest text-blue-300 mb-4 backdrop-blur-md"
+          >
+            <i class="fa-solid fa-shield-halved mr-2"></i> 100% CLIENT SIDE
+            PRIVACY
+          </div>
+          <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+            Compress Images <br />
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
+              >At Light Speed</span
+            >
+          </h1>
+          <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+            The most powerful image optimizer in the galaxy. Compress JPG, PNG,
+            and WEBP files directly in your browser. Zero quality loss.
+          </p>
+        </div>
+
+        <!-- COMPRESSION INTERFACE -->
+        <div class="glass-panel rounded-3xl p-1 relative overflow-hidden">
+          <!-- Drop Zone -->
+          <div
+            id="dropArea"
+            class="dropzone rounded-[20px] p-12 md:p-20 text-center cursor-pointer group"
+          >
+            <input type="file" id="fileInput" accept="image/*" class="hidden" />
+
+            <div
+              class="w-24 h-24 rounded-full bg-gradient-to-b from-white/10 to-transparent mx-auto flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-white/5 shadow-[0_0_30px_rgba(59,130,246,0.2)]"
+            >
+              <i
+                class="fa-solid fa-cloud-arrow-up text-4xl text-blue-400 group-hover:text-white transition"
+              ></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2">
+              Drop / Paste Image
+            </h3>
+            <p class="text-gray-500 font-medium">
+              Support: JPG, PNG, WEBP, HEIC
+            </p>
+          </div>
+
+          <!-- Result Zone (Hidden Initially) -->
+          <div id="resultArea" class="hidden p-8">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+              <!-- Preview Image -->
+              <div
+                class="w-full md:w-1/2 bg-black/40 rounded-xl overflow-hidden border border-white/10 h-64 flex items-center justify-center relative"
+              >
+                <img
+                  id="previewImg"
+                  src=""
+                  class="max-h-full max-w-full object-contain"
+                />
+                <div
+                  class="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-white backdrop-blur"
+                >
+                  Preview
+                </div>
+              </div>
+
+              <!-- Statistics -->
+              <div class="w-full md:w-1/2 space-y-6">
+                <div>
+                  <h3 class="text-gray-400 text-sm uppercase tracking-wide">
+                    Optimization Report
+                  </h3>
+                  <div
+                    class="text-3xl font-bold text-white mt-1 truncate"
+                    id="fileName"
+                  >
+                    image.jpg
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                    <div class="text-gray-500 text-xs">Original</div>
+                    <div
+                      class="text-xl font-bold text-gray-300"
+                      id="originalSize"
+                    >
+                      0 MB
+                    </div>
+                  </div>
+                  <div
+                    class="bg-gradient-to-br from-green-500/20 to-blue-500/20 p-4 rounded-xl border border-green-500/30"
+                  >
+                    <div class="text-green-400 text-xs font-bold">
+                      Compressed
+                    </div>
+                    <div class="text-xl font-bold text-white" id="newSize">
+                      0 MB
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-400">Reduction:</span>
+                  <span
+                    class="text-green-400 font-bold text-lg"
+                    id="savingPercent"
+                    >-0%</span
+                  >
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex flex-col gap-3">
+                  <a
+                    id="downloadBtn"
+                    href="#"
+                    download
+                    class="btn-galactic py-4 rounded-xl text-center shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                  >
+                    DOWNLOAD FILE <i class="fa-solid fa-download"></i>
+                  </a>
+                  <button
+                    onclick="resetApp()"
+                    class="text-gray-500 hover:text-white text-sm py-2"
+                  >
+                    Compress Another
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading Overlay -->
+          <div
+            id="loader"
+            class="absolute inset-0 bg-black/80 backdrop-blur-sm z-10 hidden flex-col items-center justify-center"
+          >
+            <div
+              class="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"
+            ></div>
+            <p class="text-blue-400 font-bold tracking-widest animate-pulse">
+              COMPRESSING...
+            </p>
+          </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid md:grid-cols-3 gap-6 mt-20">
+          <div class="glass-panel p-8 rounded-2xl glass-card">
+            <i class="fa-solid fa-lock text-3xl text-green-400 mb-4"></i>
+            <h3 class="font-bold text-lg mb-2">Zero Data Leaks</h3>
+            <p class="text-gray-400 text-sm">
+              Engineered with privacy as the core. Images never leave your
+              device.
+            </p>
+          </div>
+          <div class="glass-panel p-8 rounded-2xl glass-card">
+            <i class="fa-solid fa-bolt text-3xl text-yellow-400 mb-4"></i>
+            <h3 class="font-bold text-lg mb-2">Instant Speed</h3>
+            <p class="text-gray-400 text-sm">
+              No upload waiting times. Powered by WebAssembly for extreme
+              performance.
+            </p>
+          </div>
+          <div class="glass-panel p-8 rounded-2xl glass-card">
+            <i
+              class="fa-solid fa-wand-magic-sparkles text-3xl text-purple-400 mb-4"
+            ></i>
+            <h3 class="font-bold text-lg mb-2">Smart Lossy</h3>
+            <p class="text-gray-400 text-sm">
+              AI-driven algorithms to remove invisible data while keeping pixels
+              sharp.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- === TOOLS SECTION === -->
+      <div id="tools" class="section">
+        <div class="text-center mb-10">
+          <h2 class="text-4xl font-bold mb-4">More From Us</h2>
+          <p class="text-gray-400">Explore our other websites.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Tool 1 -->
+          
+          <div
+          
+            class="glass-panel p-6 rounded-2xl flex items-center gap-6 opacity-60 cursor-pointer"
+          >
+            <a href="https://vibestacks.netlify.app">
+            <div
+              class="w-16 h-16 rounded-xl  flex items-center justify-center text-orange-400 text-2xl bg-white/20"
+            >
+              <img src="android-chrome-192x192.png" alt="" />
+            </div>
+            <div>
+              <h3 class="font-bold text-xl">Vibe Stacks Blog</h3>
+              <p class="text-sm text-gray-500 mt-1">
+                A collection of ideas on tech, productivity, and personal
+                growth. Find your next breakthrough right here.
+              </p>
+               </a>
+            </div>
+           
+          </div>
+          <!-- Tool 2 -->
+          <div
+            class="glass-panel p-6 rounded-2xl flex items-center gap-6 opacity-60 cursor-pointer"
+          >
+            
+            <a href="https://pixelgalaxy.netlify.app">
+              <div
+              class="w-16 h-16 rounded-xl  flex items-center justify-center text-orange-400 text-2xl bg-white/20 "
+            >
+              <img src="hyper.png" alt=""/>
+            </div>
+            <div>
+              <h3 class="font-bold text-xl">HYPERDOC</h3>
+              <p class="text-sm text-gray-500 mt-1">
+                The next generation of PDF tools. Convert text, merge images,
+                and extract data.
+              </p>
+             </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === ABOUT SECTION === -->
+      <div id="about" class="section">
+        <div class="max-w-3xl mx-auto">
+          <h2 class="text-4xl font-bold mb-8">About the Mission</h2>
+          <div
+            class="glass-panel p-8 rounded-3xl space-y-6 text-gray-300 leading-relaxed"
+          >
+            <p>
+              <strong class="text-white">PixelGalaxy</strong> was born from a
+              frustration with the current state of the web. Every time you want
+              to compress an image, convert a file, or edit a PDF, you are
+              forced to upload your private data to a stranger's server.
+            </p>
+            <p>
+              We believe the browser is powerful enough to do these tasks
+              itself. By utilizing
+              <strong class="text-blue-400">Client-Side Technology</strong>, we
+              provide tools that are faster, safer, and free forever.
+            </p>
+            <p>
+              This project is hosted statically, meaning there is no backend
+              database tracking your moves. It is the ultimate form of digital
+              freedom.
+            </p>
+
+            <div class="pt-6 border-t border-white/10 flex gap-4">
+              <a href="#" class="text-gray-400 hover:text-white transition"
+                ><i class="fa-brands fa-github text-2xl"></i
+              ></a>
+              <a href="#" class="text-gray-400 hover:text-white transition"
+                ><i class="fa-brands fa-twitter text-2xl"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === PRIVACY SECTION === -->
+      <div id="privacy" class="section">
+        <div class="max-w-3xl mx-auto">
+          <h2 class="text-4xl font-bold mb-8">Privacy Protocol</h2>
+          <div
+            class="glass-panel p-8 rounded-3xl text-sm text-gray-400 space-y-4"
+          >
+            <h3 class="text-white text-lg font-bold">1. Data Handling</h3>
+            <p>
+              We do not have a backend server. We cannot see, store, or transmit
+              your images. Everything happens in your RAM (Random Access
+              Memory).
+            </p>
+
+            <h3 class="text-white text-lg font-bold">2. Analytics</h3>
+            <p>
+              We use basic anonymous counting to know how many users visit the
+              site. No personal identifiers are linked to this data.
+            </p>
+
+            <h3 class="text-white text-lg font-bold">3. Cookies</h3>
+            <p>
+              We use local storage only to remember your theme preferences. No
+              tracking cookies are utilized.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/5 bg-black/40 backdrop-blur-xl">
+      <div class="max-w-7xl mx-auto py-10 px-4 text-center">
+        <div class="flex items-center justify-center gap-2 mb-4 opacity-50">
+          <i class="fa-solid fa-planet-ringed"></i>
+          <span class="font-bold tracking-widest">PIXELGALAXY</span>
+        </div>
+        <p class="text-gray-600 text-sm mb-6">
+          &copy; 2025 Fountains Data International. All systems nominal.
+        </p>
+        <div
+          class="flex justify-center gap-6 text-xs text-gray-500 font-bold uppercase tracking-wider"
+        >
+          <button onclick="navTo('home')" class="hover:text-white transition">
+            Home
+          </button>
+          <button
+            onclick="navTo('privacy')"
+            class="hover:text-white transition"
+          >
+            Privacy
+          </button>
+          <button onclick="navTo('about')" class="hover:text-white transition">
+            Contact
+          </button>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // --- NAVIGATION ENGINE ---
+      function navTo(pageId) {
+        // Hide all sections
+        document
+          .querySelectorAll(".section")
+          .forEach((el) => el.classList.remove("active"));
+        // Show target
+        document.getElementById(pageId).classList.add("active");
+
+        // Update Menu Active State
+        document
+          .querySelectorAll(".nav-link")
+          .forEach((el) => el.classList.remove("active"));
+        const activeBtn = document.getElementById("nav-" + pageId);
+        if (activeBtn) activeBtn.classList.add("active");
+
+        // Scroll top
+        window.scrollTo(0, 0);
+      }
+
+      function toggleMobile() {
+        const menu = document.getElementById("mobileMenu");
+        menu.classList.toggle("hidden");
+      }
+
+      // --- COMPRESSION ENGINE ---
+      const fileInput = document.getElementById("fileInput");
+      const dropArea = document.getElementById("dropArea");
+      const resultArea = document.getElementById("resultArea");
+      const loader = document.getElementById("loader");
+
+      // Click to Open
+      dropArea.addEventListener("click", () => fileInput.click());
+
+      // File Input Change
+      fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
+
+      // Drag & Drop
+      dropArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropArea.classList.add("dragover");
+      });
+      dropArea.addEventListener("dragleave", () =>
+        dropArea.classList.remove("dragover")
+      );
+      dropArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropArea.classList.remove("dragover");
+        handleFiles(e.dataTransfer.files);
+      });
+
+      // Paste Handling
+      document.addEventListener("paste", (e) => {
+        if (e.clipboardData.files.length > 0) {
+          handleFiles(e.clipboardData.files);
+        }
+      });
+
+      async function handleFiles(files) {
+        const file = files[0];
+        if (!file) return;
+        if (!file.type.match("image.*")) {
+          alert("Only image files (JPG, PNG, WEBP) are supported.");
+          return;
+        }
+
+        // Show Loader
+        loader.classList.remove("hidden");
+        loader.classList.add("flex");
+
+        // Config for Compression
+        const options = {
+          maxSizeMB: 1, // Aim for under 1MB
+          maxWidthOrHeight: 1920, // HD Limit
+          useWebWorker: true,
+        };
+
+        try {
+          // Compress
+          const compressedFile = await imageCompression(file, options);
+
+          // Calculations
+          const originalSize = (file.size / 1024 / 1024).toFixed(2);
+          const newSize = (compressedFile.size / 1024 / 1024).toFixed(2);
+          const percent = Math.round(
+            ((file.size - compressedFile.size) / file.size) * 100
+          );
+
+          // Update UI
+          document.getElementById("fileName").innerText = file.name;
+          document.getElementById("originalSize").innerText =
+            originalSize + " MB";
+          document.getElementById("newSize").innerText = newSize + " MB";
+
+          const percentEl = document.getElementById("savingPercent");
+          percentEl.innerText = "-" + percent + "%";
+          percentEl.className =
+            percent > 0
+              ? "text-green-400 font-bold text-lg"
+              : "text-gray-400 font-bold text-lg";
+
+          // Preview
+          document.getElementById("previewImg").src =
+            URL.createObjectURL(compressedFile);
+
+          // --- UPDATED DOWNLOAD LOGIC WITH ADS ---
+          const dlBtn = document.getElementById("downloadBtn");
+          dlBtn.href = URL.createObjectURL(compressedFile);
+          dlBtn.download = "PixelGalaxy_" + file.name;
+
+          // Add Click Event for Ad + Notification
+          dlBtn.onclick = (e) => {
+            // 1. Open your Ad Link in New Tab
+            window.open("https://otieu.com/4/10235431", "_blank");
+
+            // 2. Show "Started" Notification
+            showToast("Download Started...", "info");
+
+            // 3. Wait 2 seconds, then show "Completed"
+            setTimeout(() => {
+              showToast("Download Complete!", "success");
+            }, 2500);
+          };
+
+          // Show Result, Hide Drop
+          dropArea.classList.add("hidden");
+          resultArea.classList.remove("hidden");
+        } catch (error) {
+          console.error(error);
+          alert("Error compressing file. It might be too large or corrupted.");
+        } finally {
+          loader.classList.add("hidden");
+          loader.classList.remove("flex");
+        }
+      }
+
+      function resetApp() {
+        document.getElementById("fileInput").value = "";
+        resultArea.classList.add("hidden");
+        dropArea.classList.remove("hidden");
+      }
+      // --- TOAST NOTIFICATION SYSTEM ---
+      function showToast(message, type) {
+        const toast = document.getElementById("toast");
+        const msg = document.getElementById("toastMsg");
+        const icon = document.getElementById("toastIcon");
+
+        msg.innerText = message;
+
+        if (type === "success") {
+          icon.className = "fa-solid fa-circle-check text-green-400";
+          toast.style.borderColor = "rgba(74, 222, 128, 0.3)";
+        } else {
+          icon.className = "fa-solid fa-circle-info text-blue-400";
+          toast.style.borderColor = "rgba(59, 130, 246, 0.3)";
+        }
+
+        toast.classList.add("show");
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+      // --- NETWORK & APP LOGIC ---
+      const loader2 = document.getElementById("galaxyLoader");
+      const loadTxt = document.getElementById("loaderText");
+
+      function toggleLoader(show, msg = "ESTABLISHING UPLINK...") {
+        if (show) {
+          loadTxt.innerText = msg;
+          loader2.classList.remove("opacity-0", "pointer-events-none");
+        } else {
+          loader2.classList.add("opacity-0", "pointer-events-none");
+        }
+      }
+
+      // 1. Initial Load Animation
+      window.addEventListener("load", () => {
+        toggleLoader(true, "INITIALIZING CORE...");
+        setTimeout(() => toggleLoader(false), 1500);
+      });
+
+      // 2. Network Detection
+      window.addEventListener("offline", () => {
+        toggleLoader(true, "CONNECTION LOST. ORBIT DECAYING...");
+      });
+      window.addEventListener("online", () => {
+        loadTxt.innerText = "SIGNAL RESTORED";
+        setTimeout(() => toggleLoader(false), 1000);
+      });
+
+      // 3. PWA Install Prompt (Auto-shows if available)
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        // You can trigger a UI element here if you want a custom install button,
+        // otherwise the browser handles it naturally or via menu.
+        console.log("App ready to install");
+      });
+    </script>
+    <!-- Toast Notification Element -->
+    <div id="toast" class="toast-box">
+      <i id="toastIcon" class="fa-solid fa-circle-check text-green-400"></i>
+      <span id="toastMsg" class="text-sm font-bold tracking-wide"
+        >Notification</span
+      >
+    </div>
+    <!-- FOOTER -->
+    <footer
+      class="mt-auto border-t border-white/5 bg-black/40 backdrop-blur-xl py-6 text-center text-xs text-gray-500 z-10 relative"
+    >
+      <div class="flex justify-center gap-6 mb-2">
+        <button onclick="navTo('home')" class="hover:text-white transition">
+          Home
+        </button>
+        <button onclick="navTo('about')" class="hover:text-white transition">
+          About
+        </button>
+        <button onclick="navTo('privacy')" class="hover:text-white transition">
+          Privacy
+        </button>
+      </div>
+      <p>&copy; 2025 PixelGalaxy. Optimized for Orbit.</p>
+    </footer>
+  </body>
+</html>

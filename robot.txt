@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pixelgalaxy.netlify.app/sitemap.xml
