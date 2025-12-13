@@ -397,7 +397,20 @@
             and WEBP files directly in your browser. Zero quality loss.
           </p>
         </div>
-
+<!-- INSTALL APP BUTTON (Hidden by default) -->
+<div id="installContainer" class="hidden mt-8 flex justify-center fade-in">
+    <button id="installBtn" class="group relative px-8 py-3 rounded-full bg-[#0f172a] border border-blue-500/30 overflow-hidden transition-all duration-300 hover:border-purple-500 hover:shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:-translate-y-1">
+        
+        <!-- Animated Gradient Background on Hover -->
+        <div class="absolute inset-0 w-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-20 transition-all duration-300 ease-out group-hover:w-full"></div>
+        
+        <!-- Button Content -->
+        <span class="relative flex items-center gap-3 text-xs md:text-sm font-bold tracking-[0.15em] text-blue-300 group-hover:text-white uppercase transition-colors">
+            <i class="fa-solid fa-circle-down text-lg animate-pulse"></i> 
+            Install PixelGalaxy
+        </span>
+    </button>
+</div>
         <!-- COMPRESSION INTERFACE -->
         <div class="glass-panel rounded-3xl p-1 relative overflow-hidden">
           <!-- Drop Zone -->
@@ -900,6 +913,48 @@
         // otherwise the browser handles it naturally or via menu.
         console.log("App ready to install");
       });
+      // --- PWA INSTALLATION ENGINE ---
+let deferredPrompt;
+const installContainer = document.getElementById('installContainer');
+const installBtn = document.getElementById('installBtn');
+
+// 1. Listen for the 'beforeinstallprompt' event
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome from automatically showing the prompt
+    e.preventDefault();
+    // Save the event so it can be triggered later
+    deferredPrompt = e;
+    // Show our cool install button
+    installContainer.classList.remove('hidden');
+    installContainer.classList.add('flex'); // Ensure flex display works
+});
+
+// 2. Handle the Click
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    
+    // Show the native install prompt
+    deferredPrompt.prompt();
+    
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+    
+    // We've used the prompt, so we can't use it again, discard it
+    deferredPrompt = null;
+    
+    // Hide the button
+    installContainer.classList.add('hidden');
+    installContainer.classList.remove('flex');
+});
+
+// 3. Optional: Detect if already installed (Standalone Mode)
+window.addEventListener('appinstalled', () => {
+    // Hide the button if app is successfully installed
+    installContainer.classList.add('hidden');
+    installContainer.classList.remove('flex');
+    console.log('PixelGalaxy installed');
+});
     </script>
     <!-- Toast Notification Element -->
     <div id="toast" class="toast-box">
@@ -927,3 +982,4 @@
     </footer>
   </body>
 </html>
+
